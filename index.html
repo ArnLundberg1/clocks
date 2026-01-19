@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <title>5 Klockor – GitHub Pages</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #111;
+      color: #fff;
+    }
+
+    nav {
+      display: flex;
+      background: #222;
+    }
+
+    nav button {
+      flex: 1;
+      padding: 15px;
+      background: none;
+      border: none;
+      color: #aaa;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    nav button.active {
+      background: #333;
+      color: #fff;
+    }
+
+    .tab {
+      display: none;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .tab.active {
+      display: block;
+    }
+
+    .clock {
+      font-size: 64px;
+      letter-spacing: 2px;
+    }
+
+    canvas {
+      background: #000;
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <button class="active" onclick="openTab(0)">Digital</button>
+  <button onclick="openTab(1)">Analog</button>
+  <button onclick="openTab(2)">Binary</button>
+  <button onclick="openTab(3)">Stopwatch</button>
+  <button onclick="openTab(4)">Countdown</button>
+</nav>
+
+<!-- Digital klocka -->
+<div class="tab active">
+  <div id="digital" class="clock"></div>
+</div>
+
+<!-- Analog klocka -->
+<div class="tab">
+  <canvas id="analog" width="300" height="300"></canvas>
+</div>
+
+<!-- Binär klocka -->
+<div class="tab">
+  <div id="binary" class="clock"></div>
+</div>
+
+<!-- Stopwatch -->
+<div class="tab">
+  <div id="stopwatch" class="clock">00:00:00</div>
+  <button onclick="startSW()">Start</button>
+  <button onclick="stopSW()">Stop</button>
+  <button onclick="resetSW()">Reset</button>
+</div>
+
+<!-- Countdown -->
+<div class="tab">
+  <div id="countdown" class="clock">10</div>
+  <button onclick="startCD()">Start</button>
+</div>
+
+<script>
+  /* Tabs */
+  function openTab(i) {
+    document.querySelectorAll('.tab').forEach((t, idx) => {
+      t.classList.toggle('active', idx === i);
+    });
+    document.querySelectorAll('nav button').forEach((b, idx) => {
+      b.classList.toggle('active', idx === i);
+    });
+  }
+
+  /* Digital */
+  function updateDigital() {
+    const d = new Date();
+    document.getElementById('digital').textContent = d.toLocaleTimeString();
+  }
+  setInterval(updateDigital, 1000);
+  updateDigital();
+
+  /* Binary */
+  function updateBinary() {
+    const d = new Date();
+    const h = d.getHours().toString(2).padStart(6, '0');
+    const m = d.getMinutes().toString(2).padStart(6, '0');
+    const s = d.getSeconds().toString(2).padStart(6, '0');
+    document.getElementById('binary').innerHTML = `${h}<br>${m}<br>${s}`;
+  }
+  setInterval(updateBinary, 1000);
+  updateBinary();
+
+  /* Analog */
+  const canvas = document.getElementById('analog');
+  const ctx = canvas.getContext('2d');
+  const r = canvas.width / 2;
+  ctx.translate(r, r);
+
+  function drawAnalog() {
+    ctx.clearRect(-r, -r, canvas.width, canvas.height);
+    const now = new Date();
+    const sec = now.getSeconds();
+    const min = now.getMinutes();
+    const hr = now.getHours() % 12;
+
+    drawHand((hr + min/60) * 30 * Math.PI/180, r*0.5, 6);
+    drawHand((min + sec/60) * 6 * Math.PI/180, r*0.7, 4);
+    drawHand(sec * 6 * Math.PI/180, r*0.9, 2, 'red');
+  }
+
+  function drawHand(pos, len, width, color='white') {
+    ctx.beginPath();
+    ctx.lineWidth = width;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = color;
+    ctx.moveTo(0,0);
+    ctx.rotate(pos);
+    ctx.lineTo(0, -len);
+    ctx.stroke();
+    ctx.rotate(-pos);
+  }
+
+  setInterval(drawAnalog, 1000);
+
+  /* Stopwatch */
+  let swTime = 0, swInt;
+  function startSW() {
+    if (!swInt) swInt = setInterval(() => {
+      swTime++;
+      document.getElementById('stopwatch').textContent = new Date(swTime*1000).toISOString().substr(11,8);
+    }, 1000);
+  }
+  function stopSW() { clearInterval(swInt); swInt = null; }
+  function resetSW() { stopSW(); swTime = 0; document.getElementById('stopwatch').textContent = '00:00:00'; }
+
+  /* Countdown */
+  let cd = 10, cdInt;
+  function startCD() {
+    if (cdInt) return;
+    cd = 10;
+    document.getElementById('countdown').textContent = cd;
+    cdInt = setInterval(() => {
+      cd--;
+      document.getElementById('countdown').textContent = cd;
+      if (cd <= 0) { clearInterval(cdInt); cdInt = null; }
+    }, 1000);
+  }
+</script>
+
+</body>
+</html>
