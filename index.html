@@ -4,90 +4,7 @@
   <meta charset="UTF-8" />
   <title>5 Klockor – GitHub Pages</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: #000;
-      color: #0f0;
-    }
-
-    nav {
-      display: flex;
-      background: #111;
-      border-bottom: 2px solid #0f0;
-    }
-
-    nav button {
-      flex: 1;
-      padding: 15px;
-      background: none;
-      border: none;
-      color: #0a0;
-      font-size: 16px;
-      cursor: pointer;
-      letter-spacing: 1px;
-    }
-
-    nav button.active {
-      background: #020;
-      color: #0f0;
-      box-shadow: inset 0 -3px 0 #0f0;
-    }
-
-    .tab {
-      display: none;
-      padding: 40px;
-      text-align: center;
-    }
-
-    .tab.active {
-      display: block;
-    }
-
-    /* DIGITAL LOOK */
-    .clock {
-      font-family: 'Courier New', monospace;
-      font-size: 96px;
-      letter-spacing: 8px;
-      color: #0f0;
-      text-shadow:
-        0 0 5px #0f0,
-        0 0 15px #0f0,
-        0 0 30px #0f0;
-    }
-
-    .digital-frame {
-      display: inline-block;
-      padding: 30px 40px;
-      border: 4px solid #0f0;
-      border-radius: 12px;
-      background: radial-gradient(circle at top, #020, #000);
-      box-shadow:
-        0 0 20px #0f0,
-        inset 0 0 20px #0a0;
-    }
-
-    canvas {
-      background: #000;
-      border-radius: 50%;
-      box-shadow: 0 0 20px #0f0;
-    }
-
-    button {
-      margin: 10px;
-      padding: 10px 20px;
-      background: #020;
-      color: #0f0;
-      border: 2px solid #0f0;
-      cursor: pointer;
-      font-family: 'Courier New', monospace;
-    }
-
-    button:hover {
-      background: #040;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -96,22 +13,22 @@
   <button onclick="openTab(1)">Analog</button>
   <button onclick="openTab(2)">Binary</button>
   <button onclick="openTab(3)">Stopwatch</button>
-  <button onclick="openTab(4)">Countdown</button>
+  <button onclick="openTab(4)">Alarm</button>
 </nav>
 
-<!-- Digital klocka -->
+<!-- Digital -->
 <div class="tab active">
   <div class="digital-frame">
     <div id="digital" class="clock"></div>
   </div>
 </div>
 
-<!-- Analog klocka -->
+<!-- Analog -->
 <div class="tab">
   <canvas id="analog" width="300" height="300"></canvas>
 </div>
 
-<!-- Binär klocka -->
+<!-- Binary -->
 <div class="tab">
   <div id="binary" class="clock"></div>
 </div>
@@ -124,98 +41,24 @@
   <button onclick="resetSW()">Reset</button>
 </div>
 
-<!-- Countdown -->
+<!-- Alarm -->
 <div class="tab">
-  <div id="countdown" class="clock">10</div>
-  <button onclick="startCD()">Start</button>
+  <div class="digital-frame">
+    <div id="alarmTime" class="clock">07:00</div>
+  </div>
+
+  <br><br>
+
+  <input type="time" id="alarmInput" value="07:00">
+
+  <br><br>
+
+  <button onclick="setAlarm()">Sätt alarm</button>
+  <button onclick="clearAlarm()">Avbryt</button>
+
+  <div id="alarmStatus"></div>
 </div>
 
-<script>
-  /* Tabs */
-  function openTab(i) {
-    document.querySelectorAll('.tab').forEach((t, idx) => {
-      t.classList.toggle('active', idx === i);
-    });
-    document.querySelectorAll('nav button').forEach((b, idx) => {
-      b.classList.toggle('active', idx === i);
-    });
-  }
-
-  /* Digital */
-  function updateDigital() {
-    const d = new Date();
-    document.getElementById('digital').textContent = d.toLocaleTimeString();
-  }
-  setInterval(updateDigital, 1000);
-  updateDigital();
-
-  /* Binary */
-  function updateBinary() {
-    const d = new Date();
-    const h = d.getHours().toString(2).padStart(6, '0');
-    const m = d.getMinutes().toString(2).padStart(6, '0');
-    const s = d.getSeconds().toString(2).padStart(6, '0');
-    document.getElementById('binary').innerHTML = `${h}<br>${m}<br>${s}`;
-  }
-  setInterval(updateBinary, 1000);
-  updateBinary();
-
-  /* Analog */
-  const canvas = document.getElementById('analog');
-  const ctx = canvas.getContext('2d');
-  const r = canvas.width / 2;
-  ctx.translate(r, r);
-
-  function drawAnalog() {
-    ctx.clearRect(-r, -r, canvas.width, canvas.height);
-    const now = new Date();
-    const sec = now.getSeconds();
-    const min = now.getMinutes();
-    const hr = now.getHours() % 12;
-
-    drawHand((hr + min/60) * 30 * Math.PI/180, r*0.5, 6);
-    drawHand((min + sec/60) * 6 * Math.PI/180, r*0.7, 4);
-    drawHand(sec * 6 * Math.PI/180, r*0.9, 2, 'red');
-  }
-
-  function drawHand(pos, len, width, color='white') {
-    ctx.beginPath();
-    ctx.lineWidth = width;
-    ctx.lineCap = 'round';
-    ctx.strokeStyle = color;
-    ctx.moveTo(0,0);
-    ctx.rotate(pos);
-    ctx.lineTo(0, -len);
-    ctx.stroke();
-    ctx.rotate(-pos);
-  }
-
-  setInterval(drawAnalog, 1000);
-
-  /* Stopwatch */
-  let swTime = 0, swInt;
-  function startSW() {
-    if (!swInt) swInt = setInterval(() => {
-      swTime++;
-      document.getElementById('stopwatch').textContent = new Date(swTime*1000).toISOString().substr(11,8);
-    }, 1000);
-  }
-  function stopSW() { clearInterval(swInt); swInt = null; }
-  function resetSW() { stopSW(); swTime = 0; document.getElementById('stopwatch').textContent = '00:00:00'; }
-
-  /* Countdown */
-  let cd = 10, cdInt;
-  function startCD() {
-    if (cdInt) return;
-    cd = 10;
-    document.getElementById('countdown').textContent = cd;
-    cdInt = setInterval(() => {
-      cd--;
-      document.getElementById('countdown').textContent = cd;
-      if (cd <= 0) { clearInterval(cdInt); cdInt = null; }
-    }, 1000);
-  }
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
