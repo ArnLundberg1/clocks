@@ -54,10 +54,15 @@
   <br><br>
 
   <button onclick="setAlarm()">Sätt alarm</button>
-  <button onclick="clearAlarm()">Avbryt</button>
+  <button onclick="snooze()">Snooze 5 min</button>
+  <button onclick="clearAlarm()">Stäng av</button>
 
   <div id="alarmStatus"></div>
 </div>
+
+<audio id="alarmSound" loop>
+  <source src="alarm.mp3" type="audio/mpeg">
+</audio>
 
 <script src="script.js"></script>
 </body>
