@@ -18,7 +18,6 @@ nav button {
   border: none;
   color: #0a0;
   cursor: pointer;
-  font-size: 16px;
 }
 
 nav button.active {
@@ -37,7 +36,6 @@ nav button.active {
   display: block;
 }
 
-/* Digital look */
 .clock {
   font-family: "Courier New", monospace;
   font-size: 96px;
@@ -85,6 +83,5 @@ input[type="time"] {
   color: #0f0;
   border: 2px solid #0f0;
   padding: 10px;
-  font-family: "Courier New", monospace;
   font-size: 18px;
 }
