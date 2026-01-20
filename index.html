@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta charset="UTF-8" />
-  <title>5 Klockor – GitHub Pages</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <title>Clock Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,29 +11,26 @@
 <nav>
   <button class="active" onclick="openTab(0)">Digital</button>
   <button onclick="openTab(1)">Analog</button>
-  <button onclick="openTab(2)">Binary</button>
+  <button onclick="openTab(2)">World</button>
   <button onclick="openTab(3)">Stopwatch</button>
   <button onclick="openTab(4)">Alarm</button>
+  <button onclick="openTab(5)">Date</button>
+  <button onclick="openTab(6)">Pomodoro</button>
+  <button onclick="openTab(7)">UTC</button>
+  <button onclick="openTab(8)">Flip</button>
+  <button onclick="openTab(9)">Night</button>
 </nav>
 
-<!-- Digital -->
-<div class="tab active">
-  <div class="digital-frame">
-    <div id="digital" class="clock"></div>
-  </div>
-</div>
+<div class="tab active"><div class="digital-frame"><div id="digital" class="clock"></div></div></div>
 
-<!-- Analog -->
+<div class="tab"><canvas id="analog" width="300" height="300"></canvas></div>
+
 <div class="tab">
-  <canvas id="analog" width="300" height="300"></canvas>
+  <div class="digital-frame"><div id="wc-se" class="clock"></div></div><p>Sverige</p>
+  <div class="digital-frame"><div id="wc-ny" class="clock"></div></div><p>New York</p>
+  <div class="digital-frame"><div id="wc-tokyo" class="clock"></div></div><p>Tokyo</p>
 </div>
 
-<!-- Binary -->
-<div class="tab">
-  <div id="binary" class="clock"></div>
-</div>
-
-<!-- Stopwatch -->
 <div class="tab">
   <div id="stopwatch" class="clock">00:00:00</div>
   <button onclick="startSW()">Start</button>
@@ -41,28 +38,35 @@
   <button onclick="resetSW()">Reset</button>
 </div>
 
-<!-- Alarm -->
 <div class="tab">
-  <div class="digital-frame">
-    <div id="alarmTime" class="clock">07:00</div>
-  </div>
-
-  <br><br>
-
+  <div class="digital-frame"><div id="alarmTime" class="clock">07:00</div></div>
   <input type="time" id="alarmInput" value="07:00">
-
-  <br><br>
-
-  <button onclick="setAlarm()">Sätt alarm</button>
-  <button onclick="snooze()">Snooze 5 min</button>
-  <button onclick="clearAlarm()">Stäng av</button>
-
+  <button onclick="setAlarm()">Sätt</button>
+  <button onclick="snooze()">Snooze</button>
+  <button onclick="clearAlarm()">Av</button>
   <div id="alarmStatus"></div>
 </div>
 
-<audio id="alarmSound" loop>
-  <source src="alarm.mp3" type="audio/mpeg">
-</audio>
+<div class="tab">
+  <div id="dateClock" class="clock"></div>
+</div>
+
+<div class="tab">
+  <div id="pomo" class="clock">25:00</div>
+  <button onclick="startPomo()">Start</button>
+  <button onclick="resetPomo()">Reset</button>
+</div>
+
+<div class="tab">
+  <div id="utc" class="clock"></div>
+  <div id="unix" class="clock"></div>
+</div>
+
+<div class="tab"><div id="flip" class="flip"></div></div>
+
+<div class="tab night" onclick="toggleFull()"><div id="night" class="clock"></div></div>
+
+<audio id="alarmSound" loop src="alarm.mp3"></audio>
 
 <script src="script.js"></script>
 </body>
