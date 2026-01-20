@@ -1,18 +1,19 @@
 /* =========================
-   TAB-HANTERING
+   TABBAR
 ========================= */
 function openTab(i) {
-  document.querySelectorAll(".tab").forEach((tab, idx) => {
-    tab.classList.toggle("active", idx === i);
+  document.querySelectorAll(".tab").forEach((t, idx) => {
+    t.classList.toggle("active", idx === i);
   });
-  document.querySelectorAll("nav button").forEach((btn, idx) => {
-    btn.classList.toggle("active", idx === i);
+  document.querySelectorAll("nav button").forEach((b, idx) => {
+    b.classList.toggle("active", idx === i);
   });
 }
 
 /* =========================
-   DIGITAL KLOCKA
+   DIGITAL
 ========================= */
+const digital = document.getElementById("digital");
 function updateDigital() {
   digital.textContent = new Date().toLocaleTimeString();
 }
@@ -20,23 +21,23 @@ setInterval(updateDigital, 1000);
 updateDigital();
 
 /* =========================
-   ANALOG KLOCKA
+   ANALOG
 ========================= */
 const canvas = document.getElementById("analog");
 const ctx = canvas.getContext("2d");
 const r = canvas.width / 2;
 ctx.translate(r, r);
 
-function drawHand(pos, len, width, color = "#0f0") {
+function drawHand(angle, length, width, color = "#0f0") {
   ctx.beginPath();
   ctx.lineWidth = width;
   ctx.lineCap = "round";
   ctx.strokeStyle = color;
   ctx.moveTo(0, 0);
-  ctx.rotate(pos);
-  ctx.lineTo(0, -len);
+  ctx.rotate(angle);
+  ctx.lineTo(0, -length);
   ctx.stroke();
-  ctx.rotate(-pos);
+  ctx.rotate(-angle);
 }
 
 function drawAnalog() {
@@ -65,52 +66,55 @@ setInterval(drawAnalog, 1000);
 /* =========================
    WORLD CLOCK
 ========================= */
-function updateWorldClocks() {
-  wc-se.textContent = new Date().toLocaleTimeString("sv-SE", {
-    timeZone: "Europe/Stockholm",
+const wcSE = document.getElementById("wc-se");
+const wcNY = document.getElementById("wc-ny");
+const wcTokyo = document.getElementById("wc-tokyo");
+
+function updateWorld() {
+  wcSE.textContent = "Stockholm: " + new Date().toLocaleTimeString("sv-SE", {
+    timeZone: "Europe/Stockholm"
   });
-  wc-ny.textContent = new Date().toLocaleTimeString("en-US", {
-    timeZone: "America/New_York",
+  wcNY.textContent = "New York: " + new Date().toLocaleTimeString("en-US", {
+    timeZone: "America/New_York"
   });
-  wc-tokyo.textContent = new Date().toLocaleTimeString("ja-JP", {
-    timeZone: "Asia/Tokyo",
+  wcTokyo.textContent = "Tokyo: " + new Date().toLocaleTimeString("ja-JP", {
+    timeZone: "Asia/Tokyo"
   });
 }
-setInterval(updateWorldClocks, 1000);
-updateWorldClocks();
+setInterval(updateWorld, 1000);
+updateWorld();
 
 /* =========================
    STOPWATCH
 ========================= */
-let swTime = 0;
-let swInterval = null;
+const stopwatch = document.getElementById("stopwatch");
+let sw = 0, swInt = null;
 
 function startSW() {
-  if (swInterval) return;
-  swInterval = setInterval(() => {
-    swTime++;
-    stopwatch.textContent = new Date(swTime * 1000)
-      .toISOString()
-      .substr(11, 8);
+  if (swInt) return;
+  swInt = setInterval(() => {
+    sw++;
+    stopwatch.textContent = new Date(sw * 1000).toISOString().substr(11, 8);
   }, 1000);
 }
-
 function stopSW() {
-  clearInterval(swInterval);
-  swInterval = null;
+  clearInterval(swInt);
+  swInt = null;
 }
-
 function resetSW() {
   stopSW();
-  swTime = 0;
+  sw = 0;
   stopwatch.textContent = "00:00:00";
 }
 
 /* =========================
    ALARM + LJUD + SNOOZE
 ========================= */
-let alarm = null;
 const alarmSound = document.getElementById("alarmSound");
+const alarmInput = document.getElementById("alarmInput");
+const alarmStatus = document.getElementById("alarmStatus");
+const alarmTime = document.getElementById("alarmTime");
+let alarm = null;
 
 function setAlarm() {
   alarm = alarmInput.value;
@@ -122,24 +126,22 @@ function clearAlarm() {
   alarm = null;
   alarmSound.pause();
   alarmSound.currentTime = 0;
-  alarmStatus.textContent = "Alarm avstängt";
+  alarmStatus.textContent = "Alarm av";
 }
 
 function snooze() {
   alarmSound.pause();
   alarmSound.currentTime = 0;
-
   const d = new Date();
   d.setMinutes(d.getMinutes() + 5);
-  alarm = d.toTimeString().slice(0, 5);
-
+  alarm = d.toTimeString().slice(0,5);
   alarmTime.textContent = alarm;
   alarmStatus.textContent = "😴 Snooze 5 min";
 }
 
 setInterval(() => {
   if (!alarm) return;
-  if (new Date().toTimeString().slice(0, 5) === alarm) {
+  if (new Date().toTimeString().slice(0,5) === alarm) {
     alarmSound.play();
     alarmStatus.textContent = "🔔 VAKNA!";
     alarm = null;
@@ -147,14 +149,15 @@ setInterval(() => {
 }, 1000);
 
 /* =========================
-   DATUM-KLOCKA
+   DATUM
 ========================= */
+const dateClock = document.getElementById("dateClock");
 function updateDate() {
   dateClock.textContent = new Date().toLocaleDateString("sv-SE", {
     weekday: "long",
     year: "numeric",
     month: "long",
-    day: "numeric",
+    day: "numeric"
   });
 }
 setInterval(updateDate, 1000);
@@ -163,29 +166,25 @@ updateDate();
 /* =========================
    POMODORO
 ========================= */
-let pomoTime = 25 * 60;
-let pomoInterval = null;
+const pomo = document.getElementById("pomo");
+let pomoTime = 25 * 60, pomoInt = null;
 
 function startPomo() {
-  if (pomoInterval) return;
-  pomoInterval = setInterval(() => {
+  if (pomoInt) return;
+  pomoInt = setInterval(() => {
     pomoTime--;
     pomo.textContent =
-      Math.floor(pomoTime / 60) +
-      ":" +
+      Math.floor(pomoTime / 60) + ":" +
       String(pomoTime % 60).padStart(2, "0");
-
     if (pomoTime <= 0) {
-      clearInterval(pomoInterval);
-      pomoInterval = null;
+      clearInterval(pomoInt);
       alarmSound.play();
     }
   }, 1000);
 }
-
 function resetPomo() {
-  clearInterval(pomoInterval);
-  pomoInterval = null;
+  clearInterval(pomoInt);
+  pomoInt = null;
   pomoTime = 25 * 60;
   pomo.textContent = "25:00";
 }
@@ -193,6 +192,8 @@ function resetPomo() {
 /* =========================
    UTC / UNIX
 ========================= */
+const utc = document.getElementById("utc");
+const unix = document.getElementById("unix");
 function updateUTC() {
   utc.textContent = new Date().toUTCString();
   unix.textContent = "UNIX: " + Math.floor(Date.now() / 1000);
@@ -201,23 +202,17 @@ setInterval(updateUTC, 1000);
 updateUTC();
 
 /* =========================
-   FLIP CLOCK
+   FLIP
 ========================= */
-function updateFlip() {
+const flip = document.getElementById("flip");
+setInterval(() => {
   flip.textContent = new Date().toLocaleTimeString();
-}
-setInterval(updateFlip, 1000);
-updateFlip();
+}, 1000);
 
 /* =========================
-   NIGHT CLOCK (FULLSCREEN)
+   NIGHT
 ========================= */
-function toggleFull() {
-  document.documentElement.requestFullscreen?.();
-}
-
-function updateNight() {
+const night = document.getElementById("night");
+setInterval(() => {
   night.textContent = new Date().toLocaleTimeString();
-}
-setInterval(updateNight, 1000);
-updateNight();
+}, 1000);
